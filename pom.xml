@@ -8,7 +8,7 @@
 		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>ar.edu.utn.edu.utn.dds</groupId>
+	<groupId>ar.edu.utn.dds</groupId>
 	<artifactId>k3003</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
