@@ -1,14 +1,13 @@
 package ar.edu.utn.edu.utn.dds.k3003.services;
 
-import ar.edu.utn.edu.utn.dds.k3003.adapters.DonacionesClientAdapter;
 import ar.edu.utn.edu.utn.dds.k3003.clients.DonacionesClient;
 import ar.edu.utn.edu.utn.dds.k3003.dtos.donaciones.DonacionDTO;
-import ar.edu.utn.edu.utn.dds.k3003.exceptions.RemoteServiceException;
-import feign.FeignException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ar.edu.utn.edu.utn.dds.k3003.requests.DonacionRequest;
+import ar.edu.utn.edu.utn.dds.k3003.requests.EstadoDonacionRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,14 +16,26 @@ import java.util.Optional;
 @Service
 public class DonacionesService {
 
-    private final DonacionesClientAdapter adapter;
+    private final DonacionesClient client;
 
-    public DonacionesService(DonacionesClientAdapter adapter) {
-        this.adapter = adapter;
+    public DonacionesService(DonacionesClient client) {
+        this.client = client;
     }
 
     public Optional<DonacionDTO> buscarDonacionPorId(String id) {
-        // Aquí la lógica de negocio si hace falta (p. ej. validaciones)
-        return adapter.buscarPorId(id);
+        return client.consultarDonacionPorID(id);
     }
+
+    public List<DonacionDTO> obtenerTodasLasDonaciones() {
+        return client.consultarTodasLasDonaciones().orElseGet(Collections::emptyList);
+    }
+
+    public Optional<DonacionDTO> registrarDonacion(DonacionRequest donacionRequest) {
+        return client.registrarDonacion(donacionRequest);
+    }
+
+    public Optional<DonacionDTO> actualizarEstadoDonacion(String donacionId, EstadoDonacionRequest estadoDonacionRequest) {
+        return client.modificarEstadoDonacion(donacionId, estadoDonacionRequest);
+    }
+
 }
