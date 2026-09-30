@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  */
 @FeignClient(name = "donacionesClient", url = "${donaciones.base-url}")
 public interface DonacionesClient {
-    @GetMapping("/api/donaciones/{id}")
-    DonacionDTO getDonacion(@PathVariable("id") Long id);
+    @GetMapping("/donaciones/{id}")
+    DonacionDTO buscarDonacionPorID(@PathVariable("id") String id);
 }
 
