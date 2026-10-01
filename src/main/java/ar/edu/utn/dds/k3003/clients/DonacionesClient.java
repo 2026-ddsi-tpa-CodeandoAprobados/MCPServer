@@ -13,6 +13,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +27,37 @@ public class DonacionesClient {
     public DonacionesClient(
             @Value("${DONACIONES_API_URL}") String baseUrl
     ) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory() {
+            @Override
+            protected void prepareConnection(java.net.HttpURLConnection connection, String httpMethod) throws java.io.IOException {
+                if (connection instanceof javax.net.ssl.HttpsURLConnection httpsConnection) {
+                    try {
+                        javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
+                            new javax.net.ssl.X509TrustManager() {
+                                public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
+                                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+                                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+                            }
+                        };
+                        javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance("TLS");
+                        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                        httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                        httpsConnection.setHostnameVerifier((hostname, session) -> true);
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+                super.prepareConnection(connection, httpMethod);
+            }
+        };
+        requestFactory.setConnectTimeout(60000);
+        requestFactory.setReadTimeout(60000);
+
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
+                .requestFactory(requestFactory)
+                .defaultHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .defaultHeader("Accept", "application/json")
                 .build();
     }
 
@@ -82,7 +113,8 @@ public class DonacionesClient {
         } catch (HttpClientErrorException.NotFound | WebClientResponseException.NotFound nf) {
             return Optional.of(Collections.emptyList());
         } catch (RestClientException ex) {
-            throw new RemoteServiceException("Error llamando Donaciones API", ex);
+            String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            throw new RemoteServiceException("Error al llamar API Donaciones: " + msg, ex);
         }
     }
 
@@ -96,7 +128,8 @@ public class DonacionesClient {
         } catch (HttpClientErrorException.NotFound nf) {
             return Optional.empty();
         } catch (RestClientException ex) {
-            throw new RemoteServiceException("Error llamando Donaciones API", ex);
+            String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            throw new RemoteServiceException("Error al llamar API Donaciones: " + msg, ex);
         }
     }
 
