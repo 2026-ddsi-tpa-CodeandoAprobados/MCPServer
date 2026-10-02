@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.dtos.logistica.DepositoDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.PaqueteDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.StockDisponibleDTO;
 import ar.edu.utn.dds.k3003.exceptions.RemoteServiceException;
+import ar.edu.utn.dds.k3003.requests.AlgoritmoRequest;
 import ar.edu.utn.dds.k3003.requests.DepositoRequest;
 import ar.edu.utn.dds.k3003.requests.PaqueteRequest;
 import ar.edu.utn.dds.k3003.services.LogisticaService;
@@ -115,6 +116,18 @@ public class LogisticaTool {
                     .orElseGet(() -> new ToolResponse<>(true, "No se encontró stock para el producto " + productoID, null));
         } catch (RemoteServiceException ex) {
             return new ToolResponse<>(false, "Error al consultar stock: " + ex.getMessage(), null);
+        }
+    }
+
+    @Tool(description = "Configurar el algoritmo de matchmaking para un depósito. Requiere el ID del depósito y el tipo de algoritmo (SUB_ATENDIDOS, PRIORIDAD o PRIORIDAD_POR_SCORE).")
+    public ToolResponse<Boolean> setAlgoritmo(String id, AlgoritmoRequest request) {
+        try {
+            if (logisticaService.setAlgoritmo(id, request)) {
+                return new ToolResponse<>(true, "Algoritmo configurado correctamente para el depósito " + id, true);
+            }
+            return new ToolResponse<>(false, "No se pudo configurar el algoritmo para el depósito con id " + id, false);
+        } catch (RemoteServiceException ex) {
+            return new ToolResponse<>(false, "Error al configurar algoritmo: " + ex.getMessage(), false);
         }
     }
 }

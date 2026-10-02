@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.dtos.logistica.AsignacionDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.DepositoDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.PaqueteDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.StockDisponibleDTO;
+import ar.edu.utn.dds.k3003.requests.AlgoritmoRequest;
 import ar.edu.utn.dds.k3003.requests.DepositoRequest;
 import ar.edu.utn.dds.k3003.requests.PaqueteRequest;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,9 @@ public class LogisticaService {
 
     public Optional<StockDisponibleDTO> consultarStockDisponible(String productoID) {
         return client.consultarStockDisponible(productoID);
+    }
+
+    public Boolean setAlgoritmo(String id, AlgoritmoRequest request) {
+        return client.setAlgoritmo(id, request);
     }
 }

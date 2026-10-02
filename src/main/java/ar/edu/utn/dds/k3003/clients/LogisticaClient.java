@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.dtos.logistica.DepositoDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.PaqueteDTO;
 import ar.edu.utn.dds.k3003.dtos.logistica.StockDisponibleDTO;
 import ar.edu.utn.dds.k3003.exceptions.RemoteServiceException;
+import ar.edu.utn.dds.k3003.requests.AlgoritmoRequest;
 import ar.edu.utn.dds.k3003.requests.DepositoRequest;
 import ar.edu.utn.dds.k3003.requests.PaqueteRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -181,6 +182,23 @@ public class LogisticaClient {
         } catch (RestClientException ex) {
             String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             throw new RemoteServiceException("Error al llamar API Logistica (stock): " + msg, ex);
+        }
+    }
+
+    public Boolean setAlgoritmo(String id, AlgoritmoRequest request) {
+        try {
+            this.restClient.patch()
+                    .uri("/depositos/{id}/algoritmo", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(request)
+                    .retrieve()
+                    .toBodilessEntity();
+            return true;
+        } catch (HttpClientErrorException.BadRequest br) {
+            return false;
+        } catch (RestClientException ex) {
+            String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            throw new RemoteServiceException("Error al llamar API Logistica (setear algoritmo): " + msg, ex);
         }
     }
 }
