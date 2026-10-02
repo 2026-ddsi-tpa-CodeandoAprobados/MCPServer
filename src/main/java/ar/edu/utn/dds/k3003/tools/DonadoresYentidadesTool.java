@@ -4,6 +4,7 @@ import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.DonadorDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.DonadorStatsDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.EntidadBeneficaDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.NecesidadMaterialDTO;
+import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.QuejaDTO;
 import ar.edu.utn.dds.k3003.exceptions.RemoteServiceException;
 import ar.edu.utn.dds.k3003.services.DonadoresYentidadesService;
 import org.springframework.ai.tool.annotation.Tool;
@@ -123,6 +124,30 @@ public class DonadoresYentidadesTool {
                     .orElseGet(() -> new ToolResponse<>(false, "No se pudo registrar la necesidad material.", null));
         } catch (RemoteServiceException ex) {
             return new ToolResponse<>(false, "Error al registrar necesidad material: " + ex.getMessage(), null);
+        }
+    }
+
+    @Tool(description = "Registrar una nueva queja de un donador. Requiere donacionID, donadorID, fecha y descripcion.")
+    public ToolResponse<QuejaDTO> registrarQueja(QuejaDTO quejaDTO) {
+        try {
+            Optional<QuejaDTO> opt = service.registrarQueja(quejaDTO);
+            return opt.map(dto -> new ToolResponse<>(true, "Queja registrada exitosamente.", dto))
+                    .orElseGet(() -> new ToolResponse<>(false, "No se pudo registrar la queja. Verifique los datos enviados.", null));
+        } catch (RemoteServiceException ex) {
+            return new ToolResponse<>(false, "Error al registrar queja: " + ex.getMessage(), null);
+        }
+    }
+
+    @Tool(description = "Obtener todas las quejas registradas por un donador específico usando su ID.")
+    public ToolResponse<List<QuejaDTO>> obtenerQuejasPorDonador(String donadorID) {
+        try {
+            List<QuejaDTO> lista = service.obtenerQuejasPorDonador(donadorID);
+            if (lista.isEmpty()) {
+                return new ToolResponse<>(true, "No hay quejas registradas para el donador con id " + donadorID, lista);
+            }
+            return new ToolResponse<>(true, "Se encontraron " + lista.size() + " queja(s).", lista);
+        } catch (RemoteServiceException ex) {
+            return new ToolResponse<>(false, "Error al consultar quejas: " + ex.getMessage(), null);
         }
     }
 }

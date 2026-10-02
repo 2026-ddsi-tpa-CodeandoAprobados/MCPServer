@@ -4,6 +4,7 @@ import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.DonadorDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.DonadorStatsDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.EntidadBeneficaDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.NecesidadMaterialDTO;
+import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.QuejaDTO;
 import ar.edu.utn.dds.k3003.exceptions.RemoteServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -196,6 +197,38 @@ public class DonadoresYentidadesClient {
         } catch (RestClientException ex) {
             String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             throw new RemoteServiceException("Error al llamar API DonadoresYEntidades (registrar necesidad): " + msg, ex);
+        }
+    }
+
+    public Optional<QuejaDTO> registrarQueja(QuejaDTO quejaDTO) {
+        try {
+            QuejaDTO dto = restClient.post()
+                    .uri("/quejas")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(quejaDTO)
+                    .retrieve()
+                    .body(QuejaDTO.class);
+            return Optional.ofNullable(dto);
+        } catch (HttpClientErrorException.BadRequest br) {
+            return Optional.empty();
+        } catch (RestClientException ex) {
+            String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            throw new RemoteServiceException("Error al llamar API DonadoresYEntidades (registrar queja): " + msg, ex);
+        }
+    }
+
+    public Optional<List<QuejaDTO>> obtenerQuejasPorDonador(String donadorID) {
+        try {
+            List<QuejaDTO> lista = restClient.get()
+                    .uri("/quejas/{donadorID}", donadorID)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<List<QuejaDTO>>() {});
+            return Optional.ofNullable(lista);
+        } catch (HttpClientErrorException.NotFound nf) {
+            return Optional.of(Collections.emptyList());
+        } catch (RestClientException ex) {
+            String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            throw new RemoteServiceException("Error al llamar API DonadoresYEntidades (quejas por donador): " + msg, ex);
         }
     }
 }

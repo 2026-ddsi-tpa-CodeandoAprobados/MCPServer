@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.DonadorDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.DonadorStatsDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.EntidadBeneficaDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.NecesidadMaterialDTO;
+import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.QuejaDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -55,5 +56,13 @@ public class DonadoresYentidadesService {
 
     public Optional<NecesidadMaterialDTO> registrarNecesidadMaterial(NecesidadMaterialDTO necesidadDTO) {
         return client.registrarNecesidadMaterial(necesidadDTO);
+    }
+
+    public Optional<QuejaDTO> registrarQueja(QuejaDTO quejaDTO) {
+        return client.registrarQueja(quejaDTO);
+    }
+
+    public List<QuejaDTO> obtenerQuejasPorDonador(String donadorID) {
+        return client.obtenerQuejasPorDonador(donadorID).orElseGet(Collections::emptyList);
     }
 }
