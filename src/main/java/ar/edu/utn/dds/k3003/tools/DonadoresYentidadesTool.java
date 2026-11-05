@@ -6,6 +6,7 @@ import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.EntidadBeneficaDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.NecesidadMaterialDTO;
 import ar.edu.utn.dds.k3003.dtos.donadoresYentidades.QuejaDTO;
 import ar.edu.utn.dds.k3003.exceptions.RemoteServiceException;
+import ar.edu.utn.dds.k3003.requests.DonadorDTORequest;
 import ar.edu.utn.dds.k3003.services.DonadoresYentidadesService;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -47,7 +48,20 @@ public class DonadoresYentidadesTool {
     }
 
     @Tool(description = "Registrar un nuevo donador en el sistema. Requiere nombre, apellido, edad, email, nroDocumento, domicilio y estado.")
-    public ToolResponse<DonadorDTO> registrarDonador(DonadorDTO donadorDTO) {
+    public ToolResponse<DonadorDTO> registrarDonador(DonadorDTORequest donadorDTORequest) {
+
+        DonadorDTO donadorDTO = new DonadorDTO(
+                null,
+                donadorDTORequest.nombre(),
+                donadorDTORequest.apellido(),
+                donadorDTORequest.edad(),
+                donadorDTORequest.email(),
+                donadorDTORequest.nroDocumento(),
+                donadorDTORequest.domicilio(),
+                donadorDTORequest.estado(),
+                donadorDTORequest.categoria()
+        );
+
         try {
             Optional<DonadorDTO> opt = service.registrarDonador(donadorDTO);
             return opt.map(dto -> new ToolResponse<>(true, "Donador registrado exitosamente.", dto))
