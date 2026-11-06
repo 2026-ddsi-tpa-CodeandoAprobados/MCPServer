@@ -1,5 +1,7 @@
 package ar.edu.utn.dds.k3003.config;
 
+import ar.edu.utn.dds.k3003.tools.ConsultasTool;
+import ar.edu.utn.dds.k3003.tools.EstadoSistemaTool;
 import ar.edu.utn.dds.k3003.tools.DonacionesTool;
 import ar.edu.utn.dds.k3003.tools.DonadoresYentidadesTool;
 import ar.edu.utn.dds.k3003.tools.IncentivosToolImpl;
@@ -17,10 +19,13 @@ public class McpConfig {
             DonacionesTool donacionesTool,
             LogisticaTool logisticaTool,
             IncentivosToolImpl incentivosToolImpl,
-            DonadoresYentidadesTool donadoresYentidadesTool
+            DonadoresYentidadesTool donadoresYentidadesTool,
+            ConsultasTool consultasTool,
+            EstadoSistemaTool estadoSistemaTool
     ) {
         return MethodToolCallbackProvider.builder()
-                .toolObjects(donacionesTool, logisticaTool, incentivosToolImpl, donadoresYentidadesTool)
+                .toolObjects(donacionesTool, logisticaTool, incentivosToolImpl, donadoresYentidadesTool,
+                        consultasTool, estadoSistemaTool)
                 .build();
     }
 }
